@@ -1,9 +1,9 @@
 import { useState } from "react";
-import CampaignCard from "../components/CampaignCard";
-import CampaignForm from "../components/CampaignForm";
-import { INITIAL_CAMPAIGNS, INITIAL_BALANCE } from "../data/mockData";
-import type { Campaign, CampaignFormData } from "../type";
-import TopMenu from "../components/TopMenu";
+import CampaignCard from "../../components/CampaignCard/CampaignCard";
+import CampaignForm from "../../components/CampaignForm/CampaignForm";
+import { INITIAL_CAMPAIGNS, INITIAL_BALANCE } from "../../data/mockData";
+import type { Campaign, CampaignFormData } from "../../type";
+import TopMenu from "../../components/TopMenu/TopMenu";
 const Home = () => {
   const [campaigns, setCampaigns] = useState<Campaign[]>(INITIAL_CAMPAIGNS);
   const [editingId, setEditingId] = useState<number | null>(null);

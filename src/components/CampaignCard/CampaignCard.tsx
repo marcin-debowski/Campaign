@@ -1,4 +1,4 @@
-import type { Campaign } from "../type";
+import type { Campaign } from "../../type";
 const CampaignCard = (
   props: Campaign & {
     deleteCampaign: (id: number) => void;

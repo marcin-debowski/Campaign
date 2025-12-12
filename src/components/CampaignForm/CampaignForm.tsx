@@ -1,6 +1,8 @@
-import React, { useEffect, useState } from "react";
-import type { CampaignFormProps } from "../type";
-import { AVAILABLE_TOWNS, SUGGESTED_KEYWORDS } from "../data/mockData";
+import React, { useState } from "react";
+import type { CampaignFormProps } from "../../type";
+import { AVAILABLE_TOWNS, SUGGESTED_KEYWORDS } from "../../data/mockData";
+import { useKeywordsTypeahead } from "../../hooks/useKeywordsTypeahead";
+import { validateCampaignForm, type ValidationErrors } from "../../utils/validation";
 
 const CampaignForm = ({
   formData,
@@ -10,96 +12,32 @@ const CampaignForm = ({
   onCancel,
   availableFunds,
 }: CampaignFormProps) => {
-  const [errors, setErrors] = useState<Record<string, string>>({});
-  const [keywordsInput, setKeywordsInput] = useState<string>("");
-  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [errors, setErrors] = useState<ValidationErrors>({});
 
-  useEffect(() => {
-    if (formData.keywords.length > 0) {
-      setKeywordsInput(formData.keywords.join(", "));
-    }
-  }, [formData.keywords]);
-
-  const getLastKeyword = (): string => {
-    const keywords = keywordsInput.split(",");
-    return keywords[keywords.length - 1].trim();
-  };
-
-  const suggestions = SUGGESTED_KEYWORDS.filter((word) => {
-    const lastWord = getLastKeyword();
-
-    const currentKeywords = keywordsInput
-      .split(",")
-      .map((k) => k.trim())
-      .filter((k) => k !== "");
-
-    const alreadyAdded = currentKeywords.some((kw) => kw.toLowerCase() === word.toLowerCase());
-
-    return (
-      !alreadyAdded && lastWord.length > 0 && word.toLowerCase().includes(lastWord.toLowerCase())
-    );
+  const {
+    keywordsInput,
+    setKeywordsInput,
+    showSuggestions,
+    setShowSuggestions,
+    suggestions,
+    handleKeywordsChange,
+    addSuggestion,
+    getKeywordsArray,
+  } = useKeywordsTypeahead({
+    keywords: formData.keywords,
+    suggestedKeywords: SUGGESTED_KEYWORDS,
   });
-
-  const handleKeywordsChange = (value: string) => {
-    setKeywordsInput(value);
-    setShowSuggestions(value.length > 0);
-  };
-
-  const addSuggestion = (suggestion: string) => {
-    const parts = keywordsInput.split(",").map((k) => k.trim());
-    parts[parts.length - 1] = suggestion;
-    const newValue = parts.join(", ");
-    setKeywordsInput(newValue + ", ");
-    setShowSuggestions(false);
-  };
-
-  const validateForm = (): boolean => {
-    const newErrors: Record<string, string> = {};
-
-    if (formData.name.trim() === "") {
-      newErrors.name = "Campaign name is required";
-    } else if (formData.name.length < 3) {
-      newErrors.name = "Campaign name must be at least 3 characters";
-    }
-
-    const currentKeywords = keywordsInput
-      .split(",")
-      .map((keyword) => keyword.trim())
-      .filter((keyword) => keyword !== "");
-
-    if (currentKeywords.length === 0) {
-      newErrors.keywords = "At least one keyword is required";
-    }
-
-    if (formData.bidAmount <= 0) {
-      newErrors.bidAmount = "Bid amount must be greater than 0";
-    }
-
-    if (formData.fund <= 0) {
-      newErrors.fund = "Fund must be greater than 0";
-    } else if (formData.status && formData.fund > availableFunds) {
-      newErrors.fund = `Insufficient funds. Available: ${availableFunds}`;
-    }
-
-    if (formData.radius <= 0) {
-      newErrors.radius = "Radius must be greater than 0";
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
 
   const onSubmitHandler = (e: React.FormEvent) => {
     e.preventDefault();
 
-    const keywords = keywordsInput
-      .split(",")
-      .map((keyword) => keyword.trim())
-      .filter((keyword) => keyword !== "");
-
+    const keywords = getKeywordsArray();
     const updatedFormData = { ...formData, keywords };
 
-    if (!validateForm()) {
+    const validation = validateCampaignForm(updatedFormData, keywordsInput, availableFunds);
+
+    if (!validation.isValid) {
+      setErrors(validation.errors);
       return;
     }
 

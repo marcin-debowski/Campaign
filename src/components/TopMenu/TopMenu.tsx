@@ -1,5 +1,5 @@
-import type { Campaign } from "../type";
-import { INITIAL_BALANCE } from "../data/mockData";
+import type { Campaign } from "../../type";
+import { INITIAL_BALANCE } from "../../data/mockData";
 import { useEffect, useState } from "react";
 interface TopMenuProps {
   campaigns: Campaign[];
