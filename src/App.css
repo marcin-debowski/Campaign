@@ -65,3 +65,12 @@
   margin-bottom: 0.5rem;
   margin-top: -0.5rem;
 }
+
+.top-menu {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 0;
+  font-weight: 600;
+  font-size: 1.1rem;
+}

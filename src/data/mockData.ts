@@ -37,4 +37,4 @@ export const INITIAL_CAMPAIGNS: Campaign[] = [
   },
 ];
 
-export const INITIAL_BALANCE = 10000;
+export const INITIAL_BALANCE = 100000;

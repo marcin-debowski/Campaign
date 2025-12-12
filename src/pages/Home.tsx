@@ -3,6 +3,7 @@ import CampaignCard from "../components/CampaignCard";
 import CampaignForm from "../components/CampaignForm";
 import { INITIAL_CAMPAIGNS } from "../data/mockData";
 import type { Campaign, CampaignFormData } from "../type";
+import TopMenu from "../components/TopMenu";
 const Home = () => {
   const [campaigns, setCampaigns] = useState<Campaign[]>(INITIAL_CAMPAIGNS);
   const [editingId, setEditingId] = useState<number | null>(null);
@@ -77,6 +78,7 @@ const Home = () => {
   return (
     <div className='main'>
       <div>
+        <TopMenu campaigns={campaigns} />
         <button onClick={() => setShowForm(!showForm)}>Add Campaign</button>
         {showForm && (
           <CampaignForm
