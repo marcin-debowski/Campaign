@@ -26,4 +26,5 @@ export interface CampaignFormProps {
   onSubmit: (data: CampaignFormData) => void;
   isEditMode?: boolean;
   onCancel?: () => void;
+  availableFunds: number;
 }

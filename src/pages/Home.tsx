@@ -1,7 +1,7 @@
 import { useState } from "react";
 import CampaignCard from "../components/CampaignCard";
 import CampaignForm from "../components/CampaignForm";
-import { INITIAL_CAMPAIGNS } from "../data/mockData";
+import { INITIAL_CAMPAIGNS, INITIAL_BALANCE } from "../data/mockData";
 import type { Campaign, CampaignFormData } from "../type";
 import TopMenu from "../components/TopMenu";
 const Home = () => {
@@ -75,6 +75,12 @@ const Home = () => {
       campaigns.map((campaign) => (campaign.id === id ? { id, ...updatedCampaign } : campaign))
     );
   };
+
+  const usedFunds = campaigns
+    .filter((c) => c.status && c.id !== editingId)
+    .reduce((sum, c) => sum + c.fund, 0);
+  const availableFunds = INITIAL_BALANCE - usedFunds;
+
   return (
     <div className='main'>
       <div>
@@ -87,6 +93,7 @@ const Home = () => {
             onSubmit={handleSubmit}
             isEditMode={editingId !== null}
             onCancel={cancelEdit}
+            availableFunds={availableFunds}
           />
         )}
       </div>

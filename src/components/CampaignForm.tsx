@@ -8,6 +8,7 @@ const CampaignForm = ({
   onSubmit,
   isEditMode,
   onCancel,
+  availableFunds,
 }: CampaignFormProps) => {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [keywordsInput, setKeywordsInput] = useState<string>("");
@@ -76,8 +77,8 @@ const CampaignForm = ({
 
     if (formData.fund <= 0) {
       newErrors.fund = "Fund must be greater than 0";
-    } else if (formData.fund > formData.bidAmount) {
-      newErrors.fund = "Fund cannot be less than bid amount";
+    } else if (formData.status && formData.fund > availableFunds) {
+      newErrors.fund = `Insufficient funds. Available: ${availableFunds}`;
     }
 
     if (formData.radius <= 0) {
