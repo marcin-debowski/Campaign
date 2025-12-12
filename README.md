@@ -1,73 +1,113 @@
-# React + TypeScript + Vite
+# Campaign Management System
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A React + TypeScript application for managing advertising campaigns with real-time fund tracking and keyword suggestions.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+### Campaign Management
 
-## React Compiler
+- ✅ **Create** new campaigns with all required fields
+- ✅ **Edit** existing campaigns with pre-filled data
+- ✅ **Delete** campaigns with confirmation
+- ✅ **Real-time validation** with error messages
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### Campaign Fields
 
-## Expanding the ESLint configuration
+- **Campaign Name** (mandatory, min 3 characters)
+- **Keywords** (mandatory, with typeahead suggestions)
+- **Bid Amount** (mandatory, must be > 0)
+- **Campaign Fund** (mandatory, validated against available funds)
+- **Status** (Active/Inactive)
+- **Town** (dropdown with pre-populated cities)
+- **Radius** (mandatory, in kilometers)
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### Advanced Features
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+- 🔍 **Keyword Typeahead** - Intelligent suggestions while typing
+- 💰 **Fund Management** - Real-time balance tracking and validation
+- 📱 **Responsive Grid** - Auto-fill campaign cards
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+## Tech Stack
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+- **React** - UI library
+- **TypeScript** - Type safety
+- **Vite** - Build tool and dev server
+- **CSS3** - Styling with modern effects
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js 18+
+- npm or yarn
+
+### Installation
+
+1. Clone the repository
+
+```bash
+git clone <repository-url>
+cd Campaign
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+2. Install dependencies
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
 ```
+
+3. Start development server
+
+```bash
+npm run dev
+```
+
+4. Open browser at `http://localhost:5173`
+
+### Build for Production
+
+```bash
+npm run build
+```
+
+## Usage
+
+### Creating a Campaign
+
+1. Click **"Add Campaign"** button
+2. Fill in all required fields (marked with \*)
+3. Use keyword typeahead by typing in Keywords field
+4. Select status (Active/Inactive)
+5. Click **"Create Campaign"**
+
+### Editing a Campaign
+
+1. Click **"Edit"** button on any campaign card
+2. Modify fields as needed
+3. Click **"Update Campaign"**
+
+### Deleting a Campaign
+
+1. Click **"Delete"** button on campaign card
+2. Campaign is removed immediately
+
+### Fund Management
+
+- Total funds: 100,000 (configurable in mockData.ts)
+- Active campaigns deduct from available funds
+- Form validates if sufficient funds exist
+- Balance updates in real-time in TopMenu
+
+## Validation Rules
+
+- **Campaign Name**: Required, minimum 3 characters
+- **Keywords**: At least one keyword required
+- **Bid Amount**: Must be greater than 0
+- **Fund**: Must be greater than 0, cannot exceed available funds (for active campaigns)
+- **Radius**: Must be greater than 0
+
+---
+
+## Technical Details (Vite Configuration)
+
+This project uses Vite with React and TypeScript. Below are the default configuration notes:
