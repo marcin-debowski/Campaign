@@ -6,6 +6,7 @@ import type { Campaign, CampaignFormData } from "../type";
 const Home = () => {
   const [campaigns, setCampaigns] = useState<Campaign[]>(INITIAL_CAMPAIGNS);
   const [editingId, setEditingId] = useState<number | null>(null);
+  const [showForm, setShowForm] = useState<boolean>(false);
   const [formData, setFormData] = useState<CampaignFormData>({
     name: "",
     keywords: [],
@@ -35,6 +36,7 @@ const Home = () => {
       status: false,
       radius: 0,
     });
+    setShowForm(false);
   };
 
   const startEdit = (campaign: Campaign) => {
@@ -48,11 +50,12 @@ const Home = () => {
       radius: campaign.radius,
     });
     setEditingId(campaign.id);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    setShowForm(true);
   };
 
   const cancelEdit = () => {
     setEditingId(null);
+    setShowForm(false);
     setFormData({
       name: "",
       keywords: [],
@@ -74,13 +77,16 @@ const Home = () => {
   return (
     <div className='main'>
       <div>
-        <CampaignForm
-          formData={formData}
-          setFormData={setFormData}
-          onSubmit={handleSubmit}
-          isEditMode={editingId !== null}
-          onCancel={cancelEdit}
-        />
+        <button onClick={() => setShowForm(!showForm)}>Add Campaign</button>
+        {showForm && (
+          <CampaignForm
+            formData={formData}
+            setFormData={setFormData}
+            onSubmit={handleSubmit}
+            isEditMode={editingId !== null}
+            onCancel={cancelEdit}
+          />
+        )}
       </div>
       <div className='campaigns-grid'>
         {campaigns.map((campaign) => (
