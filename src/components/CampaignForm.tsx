@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import type { CampaignFormProps } from "../type";
 import { AVAILABLE_TOWNS } from "../data/mockData";
 
@@ -9,9 +9,68 @@ const CampaignForm = ({
   isEditMode,
   onCancel,
 }: CampaignFormProps) => {
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [keywordsInput, setKeywordsInput] = useState<string>("");
+
+  useEffect(() => {
+    if (formData.keywords.length > 0) {
+      setKeywordsInput(formData.keywords.join(", "));
+    }
+  }, [formData.keywords]);
+
+  const validateForm = (): boolean => {
+    const newErrors: Record<string, string> = {};
+
+    if (formData.name.trim() === "") {
+      newErrors.name = "Campaign name is required";
+    } else if (formData.name.length < 3) {
+      newErrors.name = "Campaign name must be at least 3 characters";
+    }
+
+    const currentKeywords = keywordsInput
+      .split(",")
+      .map((keyword) => keyword.trim())
+      .filter((keyword) => keyword !== "");
+
+    if (currentKeywords.length === 0) {
+      newErrors.keywords = "At least one keyword is required";
+    }
+
+    if (formData.bidAmount <= 0) {
+      newErrors.bidAmount = "Bid amount must be greater than 0";
+    }
+
+    if (formData.fund <= 0) {
+      newErrors.fund = "Fund must be greater than 0";
+    } else if (formData.fund > formData.bidAmount) {
+      newErrors.fund = "Fund cannot be less than bid amount";
+    }
+
+    if (formData.radius <= 0) {
+      newErrors.radius = "Radius must be greater than 0";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const onSubmitHandler = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(formData);
+
+    const keywords = keywordsInput
+      .split(",")
+      .map((keyword) => keyword.trim())
+      .filter((keyword) => keyword !== "");
+
+    const updatedFormData = { ...formData, keywords };
+
+    if (!validateForm()) {
+      return;
+    }
+
+    onSubmit(updatedFormData);
+    setErrors({});
+
     if (!isEditMode) {
       setFormData({
         name: "",
@@ -22,6 +81,7 @@ const CampaignForm = ({
         status: false,
         radius: 0,
       });
+      setKeywordsInput("");
     }
   };
 
@@ -47,24 +107,20 @@ const CampaignForm = ({
               }
               required
             />
+            {errors.name && <p className='error-text'>{errors.name}</p>}
           </div>
           <div>
             <label>Keywords:*</label>
             <input
               type='text'
               name='keywords'
-              value={formData.keywords.join(", ")}
+              value={keywordsInput}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                setFormData({
-                  ...formData,
-                  keywords: e.target.value
-                    .split(",")
-                    .map((keyword) => keyword.trim())
-                    .filter((keyword) => keyword !== ""),
-                })
+                setKeywordsInput(e.target.value)
               }
-              required
+              placeholder='fashion, sale, summer'
             />
+            {errors.keywords && <p className='error-text'>{errors.keywords}</p>}
           </div>
           <div>
             <label>Bid Amount:*</label>
@@ -77,6 +133,7 @@ const CampaignForm = ({
               }
               required
             />
+            {errors.bidAmount && <p className='error-text'>{errors.bidAmount}</p>}
           </div>
           <div>
             <label>Fund:*</label>
@@ -89,6 +146,7 @@ const CampaignForm = ({
               }
               required
             />
+            {errors.fund && <p className='error-text'>{errors.fund}</p>}
           </div>
           <div>
             <label>Status:*</label>
@@ -103,6 +161,7 @@ const CampaignForm = ({
               <option value='active'>Active</option>
               <option value='inactive'>Inactive</option>
             </select>
+            {errors.status && <p className='error-text'>{errors.status}</p>}
           </div>
           <div>
             <label>Town:</label>
@@ -132,6 +191,7 @@ const CampaignForm = ({
               }
               required
             />
+            {errors.radius && <p className='error-text'>{errors.radius}</p>}
           </div>
           <p className='required-field-text'>* Required fields</p>
           <button type='submit'>{isEditMode ? "Update Campaign" : "Create Campaign"}</button>
