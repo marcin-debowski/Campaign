@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import type { CampaignFormProps } from "../type";
-import { AVAILABLE_TOWNS } from "../data/mockData";
+import { AVAILABLE_TOWNS, SUGGESTED_KEYWORDS } from "../data/mockData";
 
 const CampaignForm = ({
   formData,
@@ -11,12 +11,46 @@ const CampaignForm = ({
 }: CampaignFormProps) => {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [keywordsInput, setKeywordsInput] = useState<string>("");
+  const [showSuggestions, setShowSuggestions] = useState(false);
 
   useEffect(() => {
     if (formData.keywords.length > 0) {
       setKeywordsInput(formData.keywords.join(", "));
     }
   }, [formData.keywords]);
+
+  const getLastKeyword = (): string => {
+    const keywords = keywordsInput.split(",");
+    return keywords[keywords.length - 1].trim();
+  };
+
+  const suggestions = SUGGESTED_KEYWORDS.filter((word) => {
+    const lastWord = getLastKeyword();
+
+    const currentKeywords = keywordsInput
+      .split(",")
+      .map((k) => k.trim())
+      .filter((k) => k !== "");
+
+    const alreadyAdded = currentKeywords.some((kw) => kw.toLowerCase() === word.toLowerCase());
+
+    return (
+      !alreadyAdded && lastWord.length > 0 && word.toLowerCase().includes(lastWord.toLowerCase())
+    );
+  });
+
+  const handleKeywordsChange = (value: string) => {
+    setKeywordsInput(value);
+    setShowSuggestions(value.length > 0);
+  };
+
+  const addSuggestion = (suggestion: string) => {
+    const parts = keywordsInput.split(",").map((k) => k.trim());
+    parts[parts.length - 1] = suggestion;
+    const newValue = parts.join(", ");
+    setKeywordsInput(newValue + ", ");
+    setShowSuggestions(false);
+  };
 
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
@@ -109,17 +143,32 @@ const CampaignForm = ({
             />
             {errors.name && <p className='error-text'>{errors.name}</p>}
           </div>
-          <div>
+          <div style={{ position: "relative" }}>
             <label>Keywords:*</label>
             <input
               type='text'
               name='keywords'
               value={keywordsInput}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                setKeywordsInput(e.target.value)
+                handleKeywordsChange(e.target.value)
               }
-              placeholder='fashion, sale, summer'
+              onFocus={() => setShowSuggestions(true)}
+              onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+              placeholder='Start typing... (e.g., fashion, sale)'
             />
+            {showSuggestions && suggestions.length > 0 && (
+              <div className='suggestions-dropdown'>
+                {suggestions.map((suggestion) => (
+                  <div
+                    key={suggestion}
+                    className='suggestion-item'
+                    onClick={() => addSuggestion(suggestion)}
+                  >
+                    {suggestion}
+                  </div>
+                ))}
+              </div>
+            )}
             {errors.keywords && <p className='error-text'>{errors.keywords}</p>}
           </div>
           <div>
